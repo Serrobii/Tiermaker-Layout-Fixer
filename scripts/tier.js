@@ -3,77 +3,119 @@
 
 	if (!/^https?:\/\/tiermaker\.com\/create\/.+$/.test(document.URL)) return;
 
-	var $ID    = (target) => { return document.getElementById(target) };
-	var $TAG   = (target) => { return document.getElementsByTagName(target) };
-	var $CLASS = (target) => { return document.getElementsByClassName(target) };
+	const $ID    = (target) => { return document.getElementById(target) };
+	const $TAG   = (target) => { return document.getElementsByTagName(target) };
+	const $CLASS = (target) => { return document.getElementsByClassName(target) };
 	
 	// Stylize the Necessary Shit
-	var tierWidth = "55vw";
-	var tierHeight = "calc(100% - 170px)";
+	const defaultRatio = "55vw";
+	const bannerHeight = "calc(100% - 170px)";
 
-	var header = $ID("header");
+	const header = $ID("header");
 	header.css("position", "fixed")
 		  .css("width",    "100%");
 
-	var tiers = $ID("tier-wrap");
-	tiers.addClass("do-not-delete");
-	tiers.css("position",  "fixed")
-		 .css("top",       "165px")
-		 .css("left",      "5px")
-		 .css("margin",    "0px calc(55% + 10px) 0px 0px")
-		 .css("width",     tierWidth)
-		 .css("height",    tierHeight)
-		 .css("maxWidth",  "none")
-		 .css("overflowY", "auto")
-		 .css("overflowX", "clip");
+	const tier = $ID("tier-wrap");
+	tier.addClass("do-not-delete");
+	tier.css("position",  "fixed")
+		.css("top",       "165px")
+		.css("left",      "5px")
+		.css("margin",    "0px calc(55% + 10px) 0px 0px")
+		.css("width",     defaultRatio)
+		.css("height",    bannerHeight)
+		.css("maxWidth",  "none")
+		.css("overflowY", "auto")
+		.css("overflowX", "clip");
 
-	var list = $ID("char-tier-outer-container-scroll");
+	const list = $ID("char-tier-outer-container-scroll");
 	list.addClass("do-not-delete");
-	list.css("position", "absolute")
-		.css("margin",   "0px 0px 0px 0px")
-		.css("top",      "115px")
-		.css("right",    "5px")
-		.css("width",    `calc(100% - ${tierWidth} - 15px)`)
-		.css("zIndex",   "-1");
+	list.css("position",  "fixed")
+		.css("margin",    "0px 0px 0px 0px")
+		.css("top",       "165px")
+		.css("right",     "5px")
+		.css("width",     `calc(100% - ${defaultRatio} - 15px)`)
+		.css("height",    bannerHeight)
+		.css("overflowY", "auto")
+		.css("overflowX", "clip");
+	
+	const div = document.createElement("div");
+	div.id = "resizer";
+	list.parentNode.insertBefore(div, list);
+	const resizer = $ID("resizer");
+	resizer.addClass("do-not-delete");
+	resizer.css("position",     "absolute")
+		   .css("zIndex",       "2")
+		   .css("width",        "5px")
+		   .css("height",       `calc(100vh - 170px)`)
+		   .css("left",         `calc(${defaultRatio} + 5px)`)
+		   .css("top",          "165px")
+		   .css("cursor",       "col-resize")
+		   .css("background",   "rgba(255, 255, 255, 0.4)")
+		   .css("margin",       "0px")
+		   .css("padding",      "0px")
+		   .css("boxSizing",    "border-box")
+		   .css("borderRadius", "5px");
+	resizer.addEventListener("mousedown", event => {
+		document.addEventListener("mousemove", resize, false);
+		document.addEventListener("mouseup", () => {
+			document.removeEventListener("mousemove", resize, false);
+		}, false);
+	});
+	const resize = cursor => {
+		const tierWidth = `calc(${cursor.x}px - 7.5px)`;
+		const listWidth = `calc(100% - ${cursor.x}px - 7.5px)`;
+		const rPosition = `calc(${cursor.x}px - 2.5px)`;
+		tier.css("width", tierWidth);
+		list.css("width", listWidth);
+		resizer.css("left", rPosition);
+	}
 
-	var saveButton = $ID("preview").parent();
+	const saveButton = $ID("preview").parent();
 	saveButton.addClass("do-not-delete");
 	saveButton.css("position", "fixed")
 			  .css("margin",   "0px 0px 0px 0px")
 			  .css("top",      "115px")
 			  .css("left",     "5px");
-	saveButton.click(() => { tiers.css("height", "auto"); });
+	saveButton.click(() => { tier.css("height", "auto"); });
 
-	var buttons = $ID("buttons");
+	const buttons = $ID("buttons");
 	buttons.addClass("do-not-delete");
 	buttons.css("position", "fixed")
 		   .css("margin",   "0px 0px 0px 0px")
-		   .css("right",    `calc(100% - ${tierWidth} - 5px)`)
+		   .css("right",    `5px`)
 		   .css("top",      "115px");
 	buttons.childs()[0].childs()[2].remove();
 	buttons.childs()[0].childs()[0].remove();
-	var reset = buttons.childs()[0].childs()[0];
-	reset.css("backgroundColor", "red")
-		 .css("color",           "white")
-		 .css("fontSize",        "18px");
 
-	var title = $TAG("h1")[0];
-	title.css("position", "fixed").css("margin", "0px 0px 0px 0px").css("top", "65px").css("left", "0px").css("width", "100%").css("height", "50px").css("textAlign", "center").css("backgroundColor", "white");
+	const resetButton = buttons.childs()[0].childs()[0];
+	resetButton.css("backgroundColor", "red")
+			   .css("color",           "white")
+			   .css("fontSize",        "18px");
+
+	const title = $TAG("h1")[0];
+	title.css("position", "fixed")
+		 .css("margin", "0px 0px 0px 0px")
+		 .css("top", "65px")
+		 .css("left", "0px")
+		 .css("width", "100%")
+		 .css("height", "50px")
+		 .css("textAlign", "center");
+		//  .css("backgroundColor", "white");
 	title.text(title.text().substring(0, title.text().length - 16));
 	
-	var overlay = $ID("overlay");
+	const overlay = $ID("overlay");
 	overlay.addClass("do-not-delete");
 	$ID("export-container").click(() => { 
-		tiers.css("height", "calc(100% - 170px)")
-			 .css("width",  tierWidth);
+		tier.css("height", "calc(100% - 170px)")
+			 .css("width",  defaultRatio);
 	});
 
-	var altButton = $CLASS("button-link alignment-chart-btn")[0].parent();
+	const altButton = $CLASS("button-link alignment-chart-btn")[0].parent();
 	altButton.id = "align-comm-button";
 	altButton.addClass("do-not-delete");
 	altButton.css("position",     "fixed")
-			 .css("width",        `calc(${tierWidth} - ${$ID("preview").clientWidth + "px"} - ${$ID("reset").clientWidth + "px"})`)
-			 .css("left",         "5px")
+			 .css("width",        `100%`)
+			 .css("left",         "0px")
 			 .css("top",          "115px")
 			 .css("marginTop",    "0px")
 			 .css("paddingLeft",  $ID("preview").clientWidth + "px")
@@ -81,8 +123,8 @@
 	altButton.childs().forEach(element => element.css("height", "32px"));
 
 	// Delete the Useless Shit
-	var mainContainer = $ID("main-container");
-	var toDelete = mainContainer.childs().filter(element => {
+	const mainContainer = $ID("main-container");
+	const toDelete = mainContainer.childs().filter(element => {
 		if (element.hasClass("do-not-delete")) return false;
 		if (["LINK", "H1", "STYLE", "SCRIPT"].includes(element.tagName)) return false;
 		return true;

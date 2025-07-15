@@ -6,10 +6,10 @@
 	const $ID    = (target) => { return document.getElementById(target) };
 	const $TAG   = (target) => { return document.getElementsByTagName(target) };
 	const $CLASS = (target) => { return document.getElementsByClassName(target) };
-	
+
 	// Stylize the Necessary Shit
 	const defaultRatio = "55vw";
-	const bannerHeight = "calc(100% - 170px)";
+	const bannerHeight = "170px";
 
 	const header = $ID("header");
 	header.css("position", "fixed")
@@ -20,9 +20,9 @@
 	tier.css("position",  "fixed")
 		.css("top",       "165px")
 		.css("left",      "5px")
-		.css("margin",    "0px calc(55% + 10px) 0px 0px")
 		.css("width",     defaultRatio)
-		.css("height",    bannerHeight)
+		.css("height",    `calc(100% - ${bannerHeight})`)
+        .css("margin",    "0px")
 		.css("maxWidth",  "none")
 		.css("overflowY", "auto")
 		.css("overflowX", "clip");
@@ -33,28 +33,33 @@
 		.css("margin",    "0px 0px 0px 0px")
 		.css("top",       "165px")
 		.css("right",     "5px")
-		.css("width",     `calc(100% - ${defaultRatio} - 15px)`)
-		.css("height",    bannerHeight)
+		.css("width",     `calc(100% - ${defaultRatio} - 20px)`)
+		.css("height",    `calc(100% - ${bannerHeight})`)
 		.css("overflowY", "auto")
 		.css("overflowX", "clip");
-	
-	const div = document.createElement("div");
-	div.id = "resizer";
-	list.parentNode.insertBefore(div, list);
-	const resizer = $ID("resizer");
+
+	const resizer = document.createElement("div");
+	resizer.id = "resizer";
+	list.parentNode.insertBefore(resizer, list);
 	resizer.addClass("do-not-delete");
 	resizer.css("position",     "absolute")
 		   .css("zIndex",       "2")
 		   .css("width",        "5px")
 		   .css("height",       `calc(100vh - 170px)`)
-		   .css("left",         `calc(${defaultRatio} + 5px)`)
+		   .css("left",         `calc(${defaultRatio} + 7.5px)`)
 		   .css("top",          "165px")
 		   .css("cursor",       "col-resize")
 		   .css("background",   "rgba(255, 255, 255, 0.4)")
 		   .css("margin",       "0px")
 		   .css("padding",      "0px")
 		   .css("boxSizing",    "border-box")
-		   .css("borderRadius", "5px");
+		   .css("borderRadius", "5px")
+           .css("-webkit-touch-callout", "none")
+           .css("-webkit-user-select",   "none")
+           .css("-khtml-user-select",    "none")
+           .css("-moz-user-select",      "none")
+           .css("-ms-user-select",       "none")
+           .css("user-select",           "none");
 	resizer.addEventListener("mousedown", event => {
 		document.addEventListener("mousemove", resize, false);
 		document.addEventListener("mouseup", () => {
@@ -62,9 +67,13 @@
 		}, false);
 	});
 	const resize = cursor => {
-		const tierWidth = `calc(${cursor.x}px - 7.5px)`;
-		const listWidth = `calc(100% - ${cursor.x}px - 7.5px)`;
-		const rPosition = `calc(${cursor.x}px - 2.5px)`;
+        var position = (cursor.x / window.innerWidth * 10000 | 0) / 100;
+        if (position < 25) position = 25;
+        if (position > 80) position = 80;
+
+		const tierWidth = `calc(${position}vw - 10px)`;
+		const listWidth = `calc(100% - ${position}vw - 10px)`;
+		const rPosition = `calc(${position}vw - 2.5px)`;
 		tier.css("width", tierWidth);
 		list.css("width", listWidth);
 		resizer.css("left", rPosition);
@@ -101,25 +110,24 @@
 		 .css("height", "50px")
 		 .css("textAlign", "center");
 		//  .css("backgroundColor", "white");
-	title.text(title.text().substring(0, title.text().length - 16));
-	
+    const tierlistTitle = document.getElementsByTagName("title")[0].text;
+	title.text(tierlistTitle.substring(9, tierlistTitle.length - 12));
+
 	const overlay = $ID("overlay");
 	overlay.addClass("do-not-delete");
-	$ID("export-container").click(() => { 
+	$ID("export-container").click(() => {
 		tier.css("height", "calc(100% - 170px)")
 			 .css("width",  defaultRatio);
 	});
 
 	const altButton = $CLASS("button-link alignment-chart-btn")[0].parent();
-	altButton.id = "align-comm-button";
+	// altButton.id = "align-comm-button";
 	altButton.addClass("do-not-delete");
 	altButton.css("position",     "fixed")
 			 .css("width",        `100%`)
 			 .css("left",         "0px")
-			 .css("top",          "115px")
-			 .css("marginTop",    "0px")
-			 .css("paddingLeft",  $ID("preview").clientWidth + "px")
-			 .css("paddingRight", $ID("reset").clientWidth + "px");
+			 .css("top",          "110px")
+			 .css("margin",       "0px");
 	altButton.childs().forEach(element => element.css("height", "32px"));
 
 	// Delete the Useless Shit

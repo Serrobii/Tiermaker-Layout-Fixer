@@ -7,6 +7,7 @@
 	const $TAG   = target => document.getElementsByTagName(target);
 	const $CLASS = target => document.getElementsByClassName(target);
 	const bannerHeight = "170px";
+	const smoothResize = false;
 
 	const header = $ID("header");
 	header.css("position", "fixed")
@@ -44,7 +45,7 @@
 	resizer.css("position",     "absolute")
 		   .css("zIndex",       "2")
 		   .css("width",        "5px")
-		   .css("height",       `calc(100vh - 170px)`)
+		   .css("height",       `calc(100vh - ${bannerHeight})`)
 		   .css("top",          "165px")
 		   .css("cursor",       "col-resize")
 		   .css("background",   "rgba(255, 255, 255, 0.4)")
@@ -66,18 +67,18 @@
 	});
 	const resize = (x, init) => {
 		var characterWidth = init ? 240 : $CLASS("character")[0].clientWidth;
-		var newListWidth = Math[init ? "floor" : "round"]((window.innerWidth - (x.x + 10)) / characterWidth) * characterWidth;
-		// var newListWidth = window.innerWidth - (x.x + 10);
+		var newListWidth =
+			smoothResize ?
+				window.innerWidth - (x.x + 10) :
+				Math[init ? "floor" : "round"]((window.innerWidth - (x.x + 10)) / characterWidth) * characterWidth;
 			newListWidth = newListWidth < characterWidth ? characterWidth : newListWidth;
 		var newRatio = newListWidth / window.innerWidth * 100;
-		console.log(x.x, characterWidth, newListWidth, newRatio);
 
 		list.css("width",   `calc(${newListWidth}px)`);
 		tier.css("width",   `calc(100% - ${newRatio}vw - 19px)`);
 		resizer.css("left", `calc(100% - ${newRatio}vw - 12px)`);
 	}
-	window.addEventListener("resize", () => resize({ x: window.innerWidth - $ID("char-tier-outer-container-scroll").getBoundingClientRect() }))
-	// document.addEventListener("load",   () => resize({x: window.innerWidth / 2}));
+	window.addEventListener("resize", () => resize({ x: window.innerWidth - $ID("char-tier-outer-container-scroll").getBoundingClientRect().width }))
 	resize({ x: window.innerWidth / 2 }, true);
 
 	const saveButton = $ID("preview").parent();
@@ -93,7 +94,7 @@
 	buttons.addClass("do-not-delete");
 	buttons.css("position", "fixed")
 		   .css("margin",   "0px 0px 0px 0px")
-		   .css("right",    `5px`)
+		   .css("right",    "5px")
 		   .css("top",      "115px");
 	buttons.childs()[0].childs()[2].remove();
 	buttons.childs()[0].childs()[0].remove();
@@ -104,12 +105,12 @@
 			   .css("fontSize",   "18px");
 
 	const title = $TAG("h1")[0];
-	title.css("position", "fixed")
-		 .css("margin", "0px 0px 0px 0px")
-		 .css("top", "65px")
-		 .css("left", "0px")
-		 .css("width", "100%")
-		 .css("height", "50px")
+	title.css("position",  "fixed")
+		 .css("margin",    "0px 0px 0px 0px")
+		 .css("top",       "65px")
+		 .css("left",      "0px")
+		 .css("width",     "100%")
+		 .css("height",    "50px")
 		 .css("textAlign", "center");
     const tierlistTitle = document.getElementsByTagName("title")[0].text;
 	title.text(tierlistTitle.substring(9, tierlistTitle.length - 12));
@@ -123,7 +124,7 @@
 	const altButton = $CLASS("button-link alignment-chart-btn")[0].parent();
 	altButton.addClass("do-not-delete");
 	altButton.css("position", "fixed")
-			 .css("width",    `100%`)
+			 .css("width",    "100%")
 			 .css("left",     "0px")
 			 .css("top",      "110px")
 			 .css("margin",   "0px");

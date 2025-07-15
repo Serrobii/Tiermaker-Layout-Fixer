@@ -3,49 +3,50 @@
 
 	if (!/^https?:\/\/tiermaker\.com\/create-xy\/.+$/.test(document.URL)) return;
 
-	var $ID    = (target) => { return document.getElementById(target) };
-	var $TAG   = (target) => { return document.getElementsByTagName(target) };
-	var $CLASS = (target) => { return document.getElementsByClassName(target) };
+	const $ID    = (target) => { return document.getElementById(target) };
+	const $TAG   = (target) => { return document.getElementsByTagName(target) };
+	const $CLASS = (target) => { return document.getElementsByClassName(target) };
+	const bannerHeight = "170px";
+	const smoothResize = false;
 
-	// Stylize the Necessary Shit
-	var defaultRatio = "50vw";
-	var bannerHeight = "170px";
-	var chartHeight  = "600px";
-
-	var header = $ID("header");
+	const header = $ID("header");
 	header.css("position", "fixed")
 		  .css("width",    "100%");
 
-	var container = $ID("draggable-container");
+	const container = $ID("draggable-container");
 	container.addClass("do-not-delete");
-	container.css("position",  "fixed")
-			 .css("top",       "165px")
-			 .css("left",      "5px")
-			 .css("width",     defaultRatio)
-			 .css("height",    chartHeight)
-			 .css("margin",    "0px")
-			 .css("maxWidth",  "none")
-			 .css("overflowY", "auto")
-			 .css("overflowX", "clip");
 
-	var drop = $ID("drop");
-	drop.css("position", "relative")
-		.css("right",    "2px")
-		.css("bottom",   "2px")
-		.css("height",   "100%");
+	const align = $ID("drop");
+	align.addClass("do-not-delete");
+	align.css("position",        "fixed")
+		 .css("top",             "165px")
+		 .css("left",            "5px")
+		 .css("height",          `calc(100% - ${bannerHeight})`)
+		 .css("margin",          "0px")
+		 .css("maxWidth",        "none")
+		 .css("scrollbar-width", "none")
+		 .css("overflowY",       "auto")
+		 .css("overflowX",       "clip");
 
-	var drag = $ID("inner-draggables-container");
-	drag.css("width", defaultRatio);
+	const list = $ID("inner-draggables-container");
+	list.addClass("do-not-delete");
+	list.css("position",        "fixed")
+		.css("margin",          "0px 0px 0px 0px")
+		.css("top",             "165px")
+		.css("right",           "5px")
+		.css("height",          `calc(100% - ${bannerHeight})`)
+		.css("scrollbar-width", "none")
+		.css("overflowY",       "auto")
+		.css("overflowX",       "clip");
 
 	const resizer = document.createElement("div");
 	resizer.id = "resizer";
-	container.parentNode.insertBefore(resizer, container);
+	list.parentNode.insertBefore(resizer, list);
 	resizer.addClass("do-not-delete");
 	resizer.css("position",     "absolute")
 		   .css("zIndex",       "2")
 		   .css("width",        "5px")
-		   .css("height",       `calc(100vh - 170px)`)
-		   .css("left",         `calc(${defaultRatio} + 7.5px)`)
+		   .css("height",       `calc(100vh - ${bannerHeight})`)
 		   .css("top",          "165px")
 		   .css("cursor",       "col-resize")
 		   .css("background",   "rgba(255, 255, 255, 0.4)")
@@ -53,53 +54,58 @@
 		   .css("padding",      "0px")
 		   .css("boxSizing",    "border-box")
 		   .css("borderRadius", "5px")
-           .css("-webkit-touch-callout", "none")
+           .css("-webkit-touch-callout", "none") // make your cursor not select shit while resizing
            .css("-webkit-user-select",   "none")
            .css("-khtml-user-select",    "none")
            .css("-moz-user-select",      "none")
            .css("-ms-user-select",       "none")
            .css("user-select",           "none");
-	resizer.addEventListener("mousedown", event => {
+	resizer.addEventListener("mousedown", () => {
 		document.addEventListener("mousemove", resize, false);
 		document.addEventListener("mouseup", () => {
 			document.removeEventListener("mousemove", resize, false);
 		}, false);
 	});
-	const resize = cursor => {
-        var position = (cursor.x / window.innerWidth * 10000 | 0) / 100;
-        if (position < 25) position = 25;
-        if (position > 80) position = 80;
+	const resize = (x, init) => {
+		var characterWidth = init ? 240 : $CLASS("draggable")[0].clientWidth;
+		var newListWidth =
+			smoothResize ?
+				window.innerWidth - (x.x + 10) :
+				Math[init ? "floor" : "round"]((window.innerWidth - (x.x + 10)) / characterWidth) * characterWidth;
+			newListWidth = newListWidth < characterWidth ? characterWidth : newListWidth;
+		var newRatio = newListWidth / window.innerWidth * 100;
 
-		const tierWidth = `calc(${position}vw - 10px)`;
-		const listWidth = `calc(100% - ${position}vw - 10px)`;
-		const rPosition = `calc(${position}vw - 2.5px)`;
-		tier.css("width", tierWidth);
-		container.css("width", listWidth);
-		resizer.css("left", rPosition);
+		list.css("width",   `calc(${newListWidth}px)`);
+		align.css("width",  `calc(100% - ${newRatio}vw - 19px)`);
+		resizer.css("left", `calc(100% - ${newRatio}vw - 12px)`);
 	}
+	window.addEventListener("resize", () => resize({ x: window.innerWidth - $ID("inner-draggables-container").getBoundingClientRect().width }))
+	resize({ x: window.innerWidth / 2 }, true);
 
-	var saveButton = $ID("preview").parent();
+	const saveButton = $ID("preview").parent();
 	saveButton.addClass("do-not-delete");
 	saveButton.css("position", "fixed")
 			  .css("margin",   "0px 0px 0px 0px")
 			  .css("top",      "115px")
 			  .css("left",     "5px");
-	saveButton.click(() => { container.style.height = "auto"; });
+	saveButton.click(() => { drop.css("height", "auto") });
+	saveButton.childs()[0].text("Save");
 
-	var buttons = $ID("reset").parent();
+	const buttons = $ID("reset").parent();
 	buttons.addClass("do-not-delete");
 	buttons.css("position", "fixed")
 		   .css("margin",   "0px 0px 0px 0px")
-		   .css("right",    `calc(100% - ${defaultRatio} - 5px)`)
+		   .css("right",    "5px")
 		   .css("top",      "115px");
 	buttons.childs()[1].remove();
 	buttons.childs()[0].remove();
-	var reset = buttons.childs()[0];
-	reset.css("backgroundColor", "red")
-		 .css("color",           "white")
-		 .css("fontSize",        "18px");
 
-	var title = $TAG("h1")[0];
+	const resetButton = $ID("reset");
+	resetButton.css("background", "#dd0000")
+			   .css("color",      "#ffffff")
+			   .css("fontSize",   "18px");
+
+	const title = $TAG("h1")[0];
 	title.css("position",        "fixed")
 		 .css("margin",          "0px 0px 0px 0px")
 		 .css("top",             "65px")
@@ -108,32 +114,26 @@
 		 .css("height",          "50px")
 		 .css("textAlign",       "center")
 		 .css("backgroundColor", "white");
-	title.text(title.text().substring(0, title.text().length - 16));
+    const tierlistTitle = document.getElementsByTagName("title")[0].text;
+	title.text(tierlistTitle.substring(9, tierlistTitle.length - 12));
 
-	var overlay = $ID("overlay");
+	const overlay = $ID("overlay");
 	overlay.addClass("do-not-delete");
 	$ID("export-container").click(() => {
 		container.css("height", chartHeight);
 	});
 
-	var altButton = $CLASS("button-link alignment-chart-btn")[0].parent();
-	altButton.id = "align-comm-button";
+	const altButton = $CLASS("button-link alignment-chart-btn")[0].parent();
 	altButton.addClass("do-not-delete");
-	altButton.css("position",     "fixed")
-			 .css("width",        `calc(${defaultRatio} - ${$ID("preview").clientWidth + "px"} - ${$ID("reset").clientWidth + "px"})`)
-			 .css("left",         "5px")
-			 .css("top",          "115px")
-			 .css("marginTop",    "0px")
-			 .css("paddingLeft",  $ID("preview").clientWidth + "px")
-			 .css("paddingRight", $ID("reset").clientWidth + "px");
+	altButton.css("position", "fixed")
+			 .css("width",    "100%")
+			 .css("left",     "0px")
+			 .css("top",      "110px")
+			 .css("margin",   "0px");
 	altButton.childs().forEach(element => element.css("height", "32px"));
 
-	var stillInLineStyle = document.createElement("style");
-	stillInLineStyle.innerHTML = `.still-in-list { position: relative; left: calc(${defaultRatio} + 5px); bottom: 675px; }`;
-	document.head.append(stillInLineStyle);
-
 	setInterval(() => {
-		var elements = [].slice.call($ID("inner-draggables-container").children);
+		const elements = [].slice.call($ID("inner-draggables-container").children);
 		elements.forEach(element => {
 			if (element.nodeType == 3)
 				return;
@@ -145,8 +145,8 @@
 	}, 10);
 
 	// Delete the Useless Shit
-	var mainContainer = $ID("main-container");
-	var toDelete = mainContainer.childs().filter(element => {
+	const mainContainer = $ID("main-container");
+	const toDelete = mainContainer.childs().filter(element => {
 		if (element.hasClass("do-not-delete")) return false;
 		if (["LINK", "H1", "STYLE", "SCRIPT"].includes(element.tagName)) return false;
 		return true;

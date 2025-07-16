@@ -36,8 +36,6 @@
 		.css("overflowY",       "auto")
 		.css("overflowX",       "clip");
 
-	console.log(list);
-
 	const resizer = document.createElement("div");
 	resizer.id = "resizer";
 	list.parentNode.insertBefore(resizer, list);
@@ -78,8 +76,12 @@
 		tier.css("width",   `calc(100% - ${newRatio}vw - 19px)`);
 		resizer.css("left", `calc(100% - ${newRatio}vw - 12px)`);
 	}
-	window.addEventListener("resize", () => resize({ x: window.innerWidth - $ID("char-tier-outer-container-scroll").getBoundingClientRect().width }))
-	resize({ x: window.innerWidth / 2 }, true);
+	window.addEventListener("resize", () => resize({ x: window.innerWidth - $ID("char-tier-outer-container-scroll").getBoundingClientRect().width }));
+	const resizeInitialize = setInterval(() => {
+        if ($CLASS("character").length == 0) return;
+        resize({ x: window.innerWidth / 2 });
+        clearInterval(resizeInitialize);
+    }, 100);
 
 	const saveButton = $ID("preview").parent();
 	saveButton.addClass("do-not-delete");

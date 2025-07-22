@@ -13,51 +13,40 @@
 	header.css("position", "fixed")
 		  .css("width",    "100%");
 
-	const container = $("#draggable-container");
-	container.addClass("do-not-delete");
-	container.css("position",        "fixed")
-		 .css("top",             "165px")
-		 .css("left",            "5px")
-		 .css("height",          "calc(100% - 174px)")
-		 .css("margin",          "0px")
-		 .css("maxWidth",        "none")
-		 .css("scrollbar-width", "none")
-		 .css("overflowY",       "auto")
-		 .css("overflowX",       "clip");
-	const drop = $("#drop");
-	drop.addClass("do-not-delete");
-	drop.css("position",        "fixed")
-		 .css("top",             "165px")
-		 .css("left",            "5px")
-		 .css("height",          "calc(100% - 174px)")
-		 .css("margin",          "0px")
-		 .css("maxWidth",        "none")
-		 .css("scrollbar-width", "none")
-		 .css("overflowY",       "auto")
-		 .css("overflowX",       "clip");
+    const main = $("#main-container");
+    main.addClass("do-not-delete");
+    main.css("");
 
-	const draggableArea = $("#outer-draggables-container");
-	draggableArea.addClass("do-not-delete");
-	draggableArea.css("position",        "fixed")
-				 .css("margin",          "0px 0px 0px 0px")
-				 .css("top",             "165px")
-				 .css("right",           "5px")
-				 .css("width",           "calc(100% - 10px)")
-				 .css("height",          "calc(100% - 165px)")
-				 .css("scrollbar-width", "none")
-				 .css("overflowY",       "auto")
-				 .css("overflowX",       "clip");
-
-	const list = $("#inner-draggables-container");
-	list.addClass("do-not-delete");
-	list.css("position",        "fixed")
-		.css("margin",          "0px 0px 0px 0px")
+	const drag = $("#draggable-container");
+	drag.addClass("do-not-delete");
+	drag.css("position",        "fixed")
 		.css("top",             "165px")
-		.css("right",           "5px")
-		.css("height",          "calc(100% - 165px)")
-		.css("scrollbar-width", "none")
+		.css("left",            "5px")
+		.css("height",          "calc(100% - 170px)")
+		.css("margin",          "0px")
+        .css("scrollbar-width", "none")
 		.css("overflowY",       "auto")
 		.css("overflowX",       "clip");
+
+	const drop = $("#drop");
+	drop.addClass("do-not-delete");
+	drop.css("position",  "absolute")
+		.css("top",       "0px")
+		.css("left",      "0px")
+		.css("height",    "calc(100% - 4px)")
+        .css("width",     "calc(100% - 4px)")
+		.css("margin",    "0px")
+		.css("overflowY", "auto")
+		.css("overflowX", "clip");
+
+	const inner = $("#inner-draggables-container");
+	inner.addClass("do-not-delete");
+	inner.css("position",        "fixed")
+		 .css("margin",          "0px 0px 0px 0px")
+		 .css("top",             "165px")
+		 .css("right",           "5px")
+		 .css("height",          "600px")
+		 .css("scrollbar-width", "none");
 
 	const resizer = document.createElement("div");
 	resizer.id = "resizer";
@@ -86,24 +75,47 @@
 			document.removeEventListener("mousemove", resize, false);
 		}, false);
 	});
-	const resize = x => {
+	const resize = (x, init) => {
+        var oldDropWidth = drop.getBoundingClientRect().width;
+        var oldInnerWidth = inner.getBoundingClientRect().width;
+
 		var characterWidth = $("#1").clientWidth;
-		var newListWidth =
+		var newInnerWidth =
 			smoothResize ?
 				window.innerWidth - (x.x + 10) :
 				Math.round((window.innerWidth - (x.x + 10)) / characterWidth) * characterWidth;
-			newListWidth = newListWidth < characterWidth ? characterWidth : newListWidth;
-		var newRatio = newListWidth / window.innerWidth * 100;
+			newInnerWidth = newInnerWidth < characterWidth ? characterWidth : newInnerWidth;
+		var newRatio = newInnerWidth / window.innerWidth * 100;
 
-		list.css("width",   newListWidth + "px");
-		drop.css("width",   `calc(100% - ${newRatio}vw - 23px)`);
-		container.css("width",  `calc(100% - ${newRatio}vw - 23px)`);
+		inner.css("width",  newInnerWidth + "px");
+    	drag.css("width",   `calc(100% - ${newRatio}vw - 19px)`);
 		resizer.css("left", `calc(100% - ${newRatio}vw - 12px)`);
+
+        var newDropWidth = drop.getBoundingClientRect().width;
+        var newInnerWidth = inner.getBoundingClientRect().width;
+
+        var draggables = [].slice.call($(".draggable"));
+        if (!init && oldDropWidth != newDropWidth)
+        {
+            var dragRatio = newDropWidth / oldDropWidth;
+            var innerRatio = oldInnerWidth / newInnerWidth;
+            draggables.forEach((draggable) => {
+                if (draggable.style.position == "absolute")
+                {
+                    var oldPercent = Number(draggable.css("left").replace('%', ''));
+                    var totalAdjustment = dragRatio * innerRatio;
+                    var newPercent = oldPercent * totalAdjustment
+                    draggable.css("left", newPercent + '%');
+
+                    console.log(dragRatio, innerRatio, oldPercent, newPercent);
+                }
+            });
+        }
 	}
 	window.addEventListener("resize", () => resize({ x: window.innerWidth - $("#inner-draggables-container").getBoundingClientRect().width }));
 	const resizeInitialize = setInterval(() => {
         if (!$("#1")) return;
-        resize({ x: window.innerWidth / 2 + $("#1").clientWidth });
+        resize({ x: window.innerWidth / 2 + $("#1").clientWidth }, true);
         clearInterval(resizeInitialize);
     }, 100);
 
@@ -113,7 +125,7 @@
 			  .css("margin",   "0px 0px 0px 0px")
 			  .css("top",      "115px")
 			  .css("left",     "5px");
-	saveButton.click(() => { container.css("height", "auto") });
+	saveButton.click(() => { drag.css("height", "auto") });
 	saveButton.childs()[0].text("Save");
 
 	const buttons = $("#reset").parent();
@@ -144,7 +156,7 @@
 	const overlay = $("#overlay");
 	overlay.addClass("do-not-delete");
 	$("#export-container").click(() => {
-		container.css("height", "calc(100% - 165px)");
+		drag.css("height", "calc(100% - 165px)");
 	});
 
 	const altButton = $(".button-link alignment-chart-btn")[0].parent();

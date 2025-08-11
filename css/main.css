@@ -1,0 +1,118 @@
+#header {
+    position: fixed !important;
+    width:    100%;
+}
+
+#tier-wrap, #char-tier-outer-container-scroll {
+    position:        fixed !important;
+    top:             165px;
+    height:          calc(100% - 165px);
+    margin:          0px !important;
+    max-width:       100% !important;
+    scrollbar-width: none;
+    overflow-y:      auto;
+    overflow-x:      clip;
+}
+
+#tier-wrap {
+    left: 5px;
+}
+
+#char-tier-outer-container-scroll {
+    right: 5px;
+}
+
+#draggable-container, #drop, #outer-draggables-container, #inner-draggables-container {
+    position:        fixed !important;
+    /* height:          calc(100vh - 175px) !important; */
+    height:           600px !important;
+    top:             165px;
+    margin:          0px;
+    scrollbar-width: none;
+}
+
+#draggable-container, #drop {
+    left:       5px;
+    max-width:  100% !important;
+}
+
+#draggable-container {
+    margin: 2px !important;
+}
+
+#outer-draggables-container, #inner-draggables-container {
+    right:  5px;
+    height: calc(100% - 165px);
+}
+
+#outer-draggables-container {
+    width: calc(100% - 10px);
+}
+
+#resizer {
+    position:      fixed;
+    z-index:       2;
+    width:         5px;
+    height:        calc(100% - 170px);
+    top:           165px;
+    cursor:        col-resize;
+    background:    rgba(255, 255, 255, 0.4);
+    margin:        0px;
+    padding:       0px;
+    box-sizing:    border-box;
+    border-radius: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select:   none;
+    -khtml-user-select:    none;
+    -moz-user-select:      none;
+    -ms-user-select:       none;
+    user-select:           none;
+}
+
+#comm-rank-button-container, #save-button, #reset {
+    position: fixed;
+    margin:   0px 0px 0px 0px !important;
+    top:      115px;
+}
+
+#save-button {
+    left: 5px;
+}
+
+#reset {
+    color:      #ffffff;
+    font-size:  18px;
+    right:      5px;
+    width:      auto !important;
+}
+
+#reset:hover {
+    background: #dd0000 !important;
+}
+
+#title {
+    position:   fixed;
+    margin:     0px 0px 0px 0px !important;
+    top:        65px;
+    left:       0px;
+    width:      100%;
+    height:     50px;
+    text-align: center;
+}
+
+#alt-button {
+    position: fixed;
+    width:    100%;
+    left:     0px;
+    top:      110px;
+    margin:   0px;
+}
+
+#alt-button > div {
+    height: 32px !important;
+}
+
+a.alignment-chart-btn, a.community-rank-button {
+    padding: 5px 15px 5px 50px !important;
+    margin:  5px;
+}

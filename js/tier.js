@@ -1,4 +1,4 @@
-(function() {
+(() => {
 	'use strict';
 
 	if (!/^https?:\/\/tiermaker\.com\/create\/.+$/.test(document.URL)) return;
@@ -33,7 +33,7 @@
 			newListWidth =
 			newListWidth > window.innerWidth - (window.innerWidth % characterWidth) ?
 				200 :
-				newListWidth; 
+				newListWidth;
 		var newRatio = newListWidth / window.innerWidth * 100;
 
 		$("#char-tier-outer-container-scroll").css("width", newListWidth + "px");
@@ -42,10 +42,10 @@
 	}
 	window.addEventListener("resize", () => resize({ x: window.innerWidth - $("#char-tier-outer-container-scroll").getBoundingClientRect().width }));
 	const resizeInitialize = setInterval(() => {
-        if (!$("#1")) return;
-        resize({ x: window.innerWidth / 2 + $("#1").clientWidth });
-        clearInterval(resizeInitialize);
-    }, 100);
+		if (!$("#1")) return;
+		resize({ x: window.innerWidth / 2 + $("#1").clientWidth });
+		clearInterval(resizeInitialize);
+	}, 100);
 
 	$("#preview").parent().id = "save-button";
 	$("#preview").text("Save");
@@ -55,7 +55,7 @@
 	$("#buttons").childs()[0].childs()[0].remove();
 	$("#buttons").childs()[0].childs()[0].id = "reset";
 
-    const tierlistTitle = $("title")[0].text;
+	const tierlistTitle = $("title")[0].text;
 	$("h1")[0].id = "title";
 	$("#title").text(tierlistTitle.substring(9, tierlistTitle.length - 12));
 
@@ -77,7 +77,6 @@
 
 		if (keepElements.includes(element.tagName)) return false;
 		if (keepIDs.includes(element.id))           return false;
-		console.log("deleted " + element.id);
 		return true;
 	}).forEach(element => element.remove());
 })();

@@ -1,4 +1,4 @@
-	(function() {
+(() => {
 	'use strict';
 
 	if (!/^https?:\/\/tiermaker\.com\/create-xy\/.+$/.test(document.URL)) return;
@@ -19,32 +19,56 @@
 		}, false);
 	});
 	const resize = x => {
-		var characterWidth = $("#1").clientWidth;
+		var draggableWidth = $("#1").getBoundingClientRect().width;
+
+		var oldDropWidth = $("#drop").getBoundingClientRect().width - draggableWidth;
+		var oldInnerWidth = $("#inner-draggables-container").getBoundingClientRect().width + draggableWidth;
+
+		var windowWidth = window.innerWidth
 		var newListWidth =
 			smoothResize ?
-				window.innerWidth - (x.x + 10) :
-				Math.round((window.innerWidth - (x.x + 10)) / characterWidth) * characterWidth;
+				windowWidth - (x.x + 10) :
+				Math.round((windowWidth - (x.x + 10)) / draggableWidth) * draggableWidth;
 			newListWidth =
-			newListWidth < characterWidth ?
-				characterWidth :
+			newListWidth < draggableWidth ?
+				draggableWidth :
 				newListWidth;
 			newListWidth =
-			newListWidth > window.innerWidth - (window.innerWidth % characterWidth) ?
-				window.innerWidth - (window.innerWidth % characterWidth) - characterWidth :
-				newListWidth; 
-		var newRatio = newListWidth / window.innerWidth * 100;
+			newListWidth > windowWidth - (windowWidth % draggableWidth) ?
+				windowWidth - (windowWidth % draggableWidth) - draggableWidth :
+				newListWidth;
+		var newRatio = newListWidth / windowWidth * 100;
 
 		$("#inner-draggables-container").css("width", newListWidth + "px");
 		$("#draggable-container").css("width", `calc(100% - ${newRatio}vw - 23px)`);
 		$("#drop").css("width", `calc(100% - ${newRatio}vw - 23px)`);
 		resizer.css("left", `calc(100% - ${newRatio}vw - 12px)`);
+
+		var newDropWidth = $("#drop").getBoundingClientRect().width - draggableWidth;
+		var newInnerWidth = $("#inner-draggables-container").getBoundingClientRect().width + draggableWidth;
+
+		var draggables = [].slice.call($(".draggable"));
+		if (oldDropWidth != newDropWidth)
+		{
+			var dragRatio = newDropWidth / oldDropWidth;
+			var innerRatio = oldInnerWidth / newInnerWidth;
+			draggables.forEach((draggable) => {
+				if (draggable.style.position == "absolute")
+				{
+					var oldPercent = Number(draggable.css("left").replace('%', ''));
+					var totalAdjustment = dragRatio * innerRatio;
+					var newPercent = oldPercent * totalAdjustment
+					draggable.css("left", newPercent + '%');
+				}
+			});
+		}
 	}
 	window.addEventListener("resize", () => resize({ x: window.innerWidth - $("#inner-draggables-container").getBoundingClientRect().width }));
 	const resizeInitialize = setInterval(() => {
-        if (!$("#1")) return;
-        resize({ x: window.innerWidth / 2 + $("#1").clientWidth });
-        clearInterval(resizeInitialize);
-    }, 100);
+		if (!$("#1")) return;
+		resize({ x: window.innerWidth / 2 + $("#1").clientWidth });
+		clearInterval(resizeInitialize);
+	}, 100);
 
 	$("#preview").parent().id = "save-button";
 	$("#preview").text("Save");
@@ -60,11 +84,10 @@
 	$("#buttons").childs()[1].remove();
 	$("#buttons").childs()[0].remove();
 
-    const tierlistTitle = $("title")[0].text;
+	const tierlistTitle = $("title")[0].text;
 	$("h1")[0].id = "title";
 	$("#title").text(tierlistTitle.substring(9, tierlistTitle.length - 12));
 
-	const overlay = $("#overlay");
 	$("#close").click(() => $("#inner-draggables-container").childs().forEach(child => child.css("vilibility", "visible")));
 
 	$(".alignment-chart-btn")[0].parent().id = "alt-button";

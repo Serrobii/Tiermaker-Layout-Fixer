@@ -25,14 +25,14 @@
 #draggable-container, #drop, #outer-draggables-container, #inner-draggables-container {
     position:        fixed !important;
     /* height:          calc(100vh - 175px) !important; */
-    height:           600px !important;
-    top:             165px;
+    height:          600px !important;
     margin:          0px;
     scrollbar-width: none;
 }
 
 #draggable-container, #drop {
     left:       5px;
+    top:        165px;
     max-width:  100% !important;
 }
 
@@ -42,6 +42,7 @@
 
 #outer-draggables-container, #inner-draggables-container {
     right:  5px;
+    top:    167px;
     height: calc(100% - 165px);
 }
 
@@ -112,7 +113,14 @@
     height: 32px !important;
 }
 
-a.alignment-chart-btn, a.community-rank-button {
+p#alt-button > a.button-link {
+    margin: 5px;
+}
+
+p#alt-button > a.button-link:not(.alignment-chart-btn):not(.community-rank-button) {
+    padding: 5px 15px 5px 15px !important;
+}
+
+p#alt-button > a.button-link.community-rank-button {
     padding: 5px 15px 5px 50px !important;
-    margin:  5px;
 }

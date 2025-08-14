@@ -2,7 +2,7 @@
 	"name":        "Tiermaker Layout Fixer",
 	"short_name":  "TLF",
 	"description": "Fixes Tiermaker's annoying default layout",
-	"version":     "1.2.0",
+	"version":     "1.2.1",
 	"icons":
 	{	"48":  "icons/48.png",
 		"96":  "icons/96.png",

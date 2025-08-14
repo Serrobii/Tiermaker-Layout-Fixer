@@ -47,19 +47,15 @@
 		clearInterval(resizeInitialize);
 	}, 100);
 
-	$("#preview").parent().id = "save-button";
-	$("#preview").text("Save");
-	$("#save-button").click(() => $("#tier-wrap").css("height", "auto"));
-
 	$("#buttons").childs()[0].childs()[2].remove();
 	$("#buttons").childs()[0].childs()[0].remove();
 	$("#buttons").childs()[0].childs()[0].id = "reset";
 
+	$(".alignment-chart-btn")[0].css("padding", "5px 15px 5px 50px");
+
 	const tierlistTitle = $("title")[0].text;
 	$("h1")[0].id = "title";
 	$("#title").text(tierlistTitle.substring(9, tierlistTitle.length - 12));
-
-	$("#export-container").click(() => $("#tier-wrap").css("height", "calc(100% - 165px)"));
 
 	$(".button-link alignment-chart-btn")[0].parent().id = "alt-button";
 
